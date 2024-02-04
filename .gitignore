@@ -1,0 +1,23 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+brain-tumor/node_modules
+brain-tumor/.pnp
+brain-tumor/.pnp.js
+
+# testing
+brain-tumor/coverage
+
+# production
+brain-tumor/build
+
+# misc
+brain-tumor/.DS_Store
+brain-tumor/.env.local
+brain-tumor/.env.development.local
+brain-tumor/.env.test.local
+brain-tumor/.env.production.local
+
+brain-tumor/npm-debug.log*
+brain-tumor/yarn-debug.log*
+brain-tumor/yarn-error.log*
