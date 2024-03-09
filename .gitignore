@@ -23,5 +23,8 @@ brain-tumor/yarn-debug.log*
 brain-tumor/yarn-error.log*
 
 model/venv
-model/resnet.h5
 model/__pycache__
+model/BrainTumorCNN.h5
+model/BrainTumorResnet50.h5
+model/data/
+model/uploads/*
