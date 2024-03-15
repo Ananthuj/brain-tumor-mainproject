@@ -4,6 +4,7 @@ import Header from "./components/navbar";
 import Home from "./pages";
 import { AuthProvider } from "./context/";
 import { useRoutes } from "react-router-dom";
+import HistoryPage from "./pages/history";
 
 function App() {
   const routesArray = [
@@ -22,6 +23,10 @@ function App() {
     {
       path: "/home",
       element: <Home />,
+    },
+    {
+      path: "/history",
+      element: <HistoryPage />,
     },
   ];
   let routesElement = useRoutes(routesArray);

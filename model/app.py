@@ -21,7 +21,8 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-loaded_model = load_model("resnet.h5")
+cnn_model = load_model("./BrainTumorCNN.h5")
+resnet_model = load_model("./BrainTumorResnet50.h5")
 
 
 def allowed_file(filename):
@@ -31,7 +32,7 @@ def allowed_file(filename):
 @app.route("/upload", methods=["POST"])
 def upload_file():
     print(f"Starting")
-    labels = ['glioma_tumor','no_tumor','meningioma_tumor','pituitary_tumor']
+    labels = ["glioma_tumor", "meningioma_tumor", "no_tumor", "pituitary_tumor"]
     if "image" not in request.files:
         return jsonify({"error": "No file part"})
 
@@ -46,11 +47,23 @@ def upload_file():
         print(f"Image received and saved: {filename}")
 
     img = cv2.imread(filename)
-    img = cv2.resize(img, (150, 150))
-    img = np.expand_dims(img, axis=0) 
-    predictions = loaded_model.predict(img)
-    predicted_class = np.argmax(predictions)
-    predicted_label = labels[predicted_class]
+    img = cv2.resize(img, (224, 224))
+    img_array = np.array(img)
+    print(img_array.shape)
+    img_array = img_array.reshape(1, 224, 224, 3)
+    print(img_array.shape)
+    cnn_prediction = cnn_model.predict(img_array)
+    resnet_prediction = resnet_model.predict(img_array)
+
+    weight_cnn = 0.5
+    weight_resnet = 0.5
+    ensemble_prediction = (
+        weight_cnn * cnn_prediction + weight_resnet * resnet_prediction
+    )
+
+    final_label = np.argmax(ensemble_prediction, axis=1)
+    print(final_label)
+    predicted_label = labels[final_label[0]]
     print(predicted_label)
 
     body = {}

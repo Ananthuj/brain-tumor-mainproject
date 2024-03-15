@@ -6,14 +6,58 @@ import molecule from '../assets/molecule.png'
 import pinkball from '../assets/pinkball.png'
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context';
+import { setDoc, doc, serverTimestamp, arrayUnion, Timestamp } from 'firebase/firestore';
+import { db, storage } from "../firebase/firebase";
+import { v4 as uuid } from "uuid";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+
 const Home = () => {
     const { userLoggedIn } = useAuth()
+    const { currentUser } = useAuth()
     const [file, setFile] = useState();
     const [preview, setPreview] = useState();
     const [classtype, setClasstype] = useState();
+    const [imageurl, setImageurl] = useState(null);
+    const [percentage, setPercentage] = useState(null);
 
+    const uploadFile = () => {
+        const img_unique_id = uuid();
+        const storageRef = ref(storage, img_unique_id);
 
-    const handleUpload = async () => {
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+                const progress =
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log("Upload is " + progress + "% done");
+                setPercentage(progress);
+                switch (snapshot.state) {
+                    case "paused":
+                        console.log("Upload is paused");
+                        break;
+                    case "running":
+                        console.log("Upload is running");
+                        break;
+                }
+            },
+            (error) => {
+                console.log(error);
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    setImageurl(downloadURL);
+                    console.log('completed')
+                    console.log(downloadURL)
+                    console.log('completed')
+                    handleUpload(downloadURL);
+                });
+            }
+        );
+    };
+
+    const handleUpload = async (downloadURL) => {
         if (file) {
             console.log('calling')
             const imageData = new FormData();
@@ -24,7 +68,22 @@ const Home = () => {
             });
             const data = await response.json();
             setClasstype(data.data['class']);
-            console.log('data.result:', data);
+            console.log('sssss')
+            console.log(data.data['class'])
+            console.log('sssss')
+            // console.log('data.class:', data.result.data['class']);
+
+            const userDocRef = doc(db, "users", currentUser.email);
+            console.log(imageurl)
+            console.log(data.data['class'])
+            await setDoc(userDocRef, {
+                uploads: arrayUnion({
+                    imageURL: downloadURL,
+                    result: data.data['class'],
+                    timestamp: Timestamp.now(),
+                }),
+            }, { merge: true });
+            console.log('Upload details stored in Firestore');
         }
     };
 
@@ -35,14 +94,18 @@ const Home = () => {
         }
     }, [file]);
 
-
+    const handleReload = () => {
+        window.location.reload();
+    };
 
     return (
         <div class="parent">
             {!userLoggedIn && (<Navigate to={'/login'} replace={true} />)}
             <div class="child">
                 <div class="left">
-                    <h3>BRAIN TUMOR DETECTION</h3>
+                    {classtype && <h3>{classtype}</h3>}
+                    {!classtype && <h3>BRAIN TUMOR DETECTION</h3>}
+
                     <br />
                     <h4>I am a Deep learning model. I can classify brain tumors upto 4 types. Try me out!</h4>
                     <br />
@@ -51,9 +114,13 @@ const Home = () => {
                         pick an image 👉
                     </button>
                     }
-                    {preview && <button class="upload" onClick={handleUpload}>
-                        Predict 👉
+                    {preview && <button class="upload" onClick={uploadFile}>
+                        Predict
                     </button>}
+                    {classtype && <button class="upload" onClick={handleReload}>
+                        Check another
+                    </button>}
+
 
 
                 </div>
