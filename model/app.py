@@ -33,6 +33,12 @@ def allowed_file(filename):
 def upload_file():
     print(f"Starting")
     labels = ["glioma_tumor", "meningioma_tumor", "no_tumor", "pituitary_tumor"]
+    sentences = [
+        "Glioma tumors, though less common than some other types, are a formidable challenge in neuro-oncology due to their infiltrative nature and diverse genetic profiles. Treatment strategies often require a multidisciplinary approach tailored to individual patients' needs.",
+        "Meningioma tumors, typically slow-growing and benign, can still present clinical challenges depending on their location and size. Surgical resection remains the primary treatment, but advancements in radiotherapy and targeted therapies offer promising options for cases requiring adjunctive treatment.",
+        "The absence of a tumor.",
+        "Pituitary tumors, often benign and hormonally active, can manifest in various ways, posing diagnostic and therapeutic dilemmas. Treatment modalities range from observation for asymptomatic cases to surgical resection and hormonal therapies for symptomatic or aggressive tumors.",
+    ]
     if "image" not in request.files:
         return jsonify({"error": "No file part"})
 
@@ -64,12 +70,14 @@ def upload_file():
     final_label = np.argmax(ensemble_prediction, axis=1)
     print(final_label)
     predicted_label = labels[final_label[0]]
+    descrip = sentences[final_label[0]]
     print(predicted_label)
 
     body = {}
     data = {}
 
     data["class"] = predicted_label
+    data["descrip"] = descrip
     print(predicted_label)
     body["data"] = data
     return buildResponse(body)

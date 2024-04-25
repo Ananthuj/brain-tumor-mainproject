@@ -26,4 +26,5 @@ model/venv
 model/__pycache__
 model/BrainTumorCNN.h5
 model/BrainTumorResnet50.h5
+model/dataset/
 model/uploads/*

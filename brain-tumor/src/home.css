@@ -210,3 +210,20 @@ li {
     align-items: flex-start;
     flex-direction: column;
 }
+
+select#blood_group.upload {
+    width: 55%;
+}
+
+input#email.upload,
+input#password.upload {
+    width: 50%;
+}
+
+::placeholder {
+    color: black;
+}
+
+h4.bolddesc {
+    font-size: larger;
+}

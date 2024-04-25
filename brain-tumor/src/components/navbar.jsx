@@ -22,9 +22,9 @@ const Header = () => {
                     <Link to={'/'}>  <li>
                         Home
                     </li></Link>
-                    <Link to={'/history'}>  <li>
+                    {userLoggedIn && <Link to={'/history'}>  <li>
                         History
-                    </li></Link>
+                    </li></Link>}
                     {userLoggedIn && <li onClick={onLogout}>Logout</li>}
                 </ul>
             </div>

@@ -19,7 +19,7 @@ const HistoryPage = () => {
 
                 if (userDocSnapshot.exists()) {
                     const userUploads = userDocSnapshot.data().uploads || [];
-                    setUploads(userUploads);
+                    setUploads(userUploads.reverse());
                 } else {
                     console.log('User document does not exist');
                 }
@@ -45,8 +45,16 @@ const HistoryPage = () => {
                         </h2>
 
                         <br />
-
-                        {upload.timestamp && moment(upload.timestamp.toDate()).format('dddd DD MMMM YYYY hh:mm A')}
+                        Patient Name: {upload.patientName}
+                        <br />
+                        <br />
+                        Patient Age: {upload.patientAge}
+                        <br />
+                        <br />
+                        Blood Group: {upload.blood}
+                        <br />
+                        <br />
+                        Time of prediction: {upload.timestamp && moment(upload.timestamp.toDate()).format('dddd DD MMMM YYYY hh:mm A')}
                     </li>
                 ))}
             </ul>

@@ -20,9 +20,11 @@ const Login = () => {
 
     const onSubmit = async (e) => {
         e.preventDefault()
-        if (!isSigningIn) {
-            setIsSigningIn(true)
-            await doSignInWithEmailAndPassword(email, password)
+        try {
+            await doSignInWithEmailAndPassword(email, password);
+        } catch (error) {
+            console.error("Sign-in error:", error.message);
+            alert("Please check email and password.");
         }
     }
 
